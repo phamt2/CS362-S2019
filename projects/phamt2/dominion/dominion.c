@@ -657,11 +657,13 @@ int adventurerRefactored(int drawntreasure, struct gameState *state, int current
             drawntreasure++;
         else{
             temphand[z]=cardDrawn;
-            state->handCount[currentPlayer]--; //this should just remove the top card (the most recently drawn one).
+            //BUG 1: Should remove bottom card instead of top card. Changed state->handCount[currentPlayer]-- to ++
+            state->handCount[currentPlayer]++; //this should just remove the top card (the most recently drawn one).
             z++;
         }
     }
-    while(z-1>=0){
+    //BUG 2: Changed z-1>=0 to z-1>=1 in order to discard only when z is equal to 3 instead of 2. Which will change how many cards will be in the temphand when drawn
+    while(z-1>=1){
         state->discard[currentPlayer][state->discardCount[currentPlayer]++]=temphand[z-1]; // discard all cards in play that have been drawn
         z=z-1;
     }
@@ -672,7 +674,8 @@ int adventurerRefactored(int drawntreasure, struct gameState *state, int current
 int smithyRefactored(int currentPlayer, struct gameState *state, int handPos){
     int i;
     //+3 Cards
-    for (i = 0; i < 3; i++)
+    // BUG 3: Changed i < 3 to i < 2 which will change how many cards are drawn from 3 to only 2
+    for (i = 0; i < 2; i++)
     {
         drawCard(currentPlayer, state);
     }
@@ -690,12 +693,15 @@ int villageRefactored(int currentPlayer, struct gameState *state, int handPos){
     state->numActions = state->numActions + 2;
         
     //discard played card from hand
-    discardCard(handPos, currentPlayer, state, 0);
+    //BUG 4: Changed discardCard 0 to 1 causing the discardCard to not add the card to played pile.
+    discardCard(handPos, currentPlayer, state, 1);
     return 0;
 }
 
 int stewardRefactored(int choice1, int choice2, int choice3, int currentPlayer, struct gameState *state, int handPos){
-    if (choice1 == 1)
+
+    //BUG 5: Changed == 1 to 2 therefore making choice1 = 1 discarding cards and choice1 = 2 will always add 2 cards skipping the add 2 coins choice. While the choice of drawing 2 cards will always lead to discarding 2 cards.
+    if (choice1 == 2)
     {
         //+2 cards
         drawCard(currentPlayer, state);
