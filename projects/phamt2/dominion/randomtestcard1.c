@@ -122,7 +122,7 @@ void main(){
                 removeErrorCount++;
             }
 
-            if (nGame.numActions + 1 == randomAction)
+            if (nGame.playedCardCount + 1 == randomPlayed)
             {
                 printf("Village card was discarded properly into the played pile\n");
             }
